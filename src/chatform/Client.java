@@ -33,8 +33,9 @@ public class Client extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					// TODO: get the client usename
+					// TODO: get the client username
 					Client frame = new Client();
+					frame.setTitle("Aplicação de Conversa (Cliente)");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

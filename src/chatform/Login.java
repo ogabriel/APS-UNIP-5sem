@@ -58,6 +58,7 @@ public class Login extends JFrame {
 				// Connection con = connect();
 				// frame.connection(con)
 				client.setAlwaysOnTop (true);
+				client.setTitle("Aplicação de Conversa (Cliente)");
 				setFocusableWindowState(false);
 				client.setVisible(true);
 			}
