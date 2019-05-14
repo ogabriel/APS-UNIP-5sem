@@ -54,6 +54,8 @@ public class Client extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
+		this.setLocationRelativeTo(null);
+		this.setTitle("Aplicação de Conversa (Cliente)");
 		
 		JScrollPane messages = new JScrollPane();
 		messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);

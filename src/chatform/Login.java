@@ -43,12 +43,14 @@ public class Login extends JFrame {
 	 */
 	public Login() {
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 374, 277);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		this.setLocationRelativeTo(null);
+		this.setTitle("Aplicação de Conversa (Cliente)");
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new ActionListener() {
@@ -57,8 +59,8 @@ public class Login extends JFrame {
 				// TODO: send the data or the connection
 				// Connection con = connect();
 				// frame.connection(con)
+				Login.this.dispose();
 				client.setAlwaysOnTop (true);
-				client.setTitle("Aplicação de Conversa (Cliente)");
 				setFocusableWindowState(false);
 				client.setVisible(true);
 			}

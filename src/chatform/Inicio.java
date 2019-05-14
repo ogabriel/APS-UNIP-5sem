@@ -12,6 +12,10 @@ import java.awt.event.ActionEvent;
 
 public class Inicio extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5602644222765201727L;
 	private final JPanel contentPanel = new JPanel();
 
 	/**
@@ -20,7 +24,6 @@ public class Inicio extends JDialog {
 	public static void main(String[] args) {
 		try {
 			Inicio dialog = new Inicio();
-			dialog.setTitle("Aplicação de Conversa");
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -38,13 +41,15 @@ public class Inicio extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel);
 		contentPanel.setLayout(null);
+		this.setLocationRelativeTo(null);
+		this.setTitle("Aplicação de Conversa");
 		{
 			JButton btnServidor = new JButton("Servidor");
 			btnServidor.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					Server server = new Server();
-					server.setTitle("Aplicação de Conversa (Servidor)");
 					server.setVisible(true);
+					Inicio.this.dispose();
 				}
 			});
 			btnServidor.setBounds(10, 126, 182, 61);
@@ -55,7 +60,6 @@ public class Inicio extends JDialog {
 			btnCliente.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					Login login = new Login();
-					login.setTitle("Aplicação de Conversa (Cliente)");
 					login.setVisible(true);
 				}
 			});
@@ -73,11 +77,6 @@ public class Inicio extends JDialog {
 			buttonPane.setBounds(0, 228, 434, 33);
 			getContentPane().add(buttonPane);
 			buttonPane.setLayout(null);
-			{
-				JButton cancelButton = new JButton("Cancelar");
-				cancelButton.setBounds(131, 5, 167, 23);
-				buttonPane.add(cancelButton);
-			}
 		}
 	}
 

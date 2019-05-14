@@ -15,6 +15,10 @@ import java.awt.CardLayout;
 
 public class Server extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4998717362394143017L;
 	private JPanel contentPane;
 	private JTextField numeroPorta;
 	private JButton btnOk;
@@ -26,6 +30,7 @@ public class Server extends JFrame {
 	private JLabel lblValorIp;
 	private JLabel lblValorPorta;
 	private JButton btnEncerrarConexao;
+	public boolean a;
 
 	/**
 	 * Launch the application.
@@ -54,6 +59,8 @@ public class Server extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
+		this.setLocationRelativeTo(null);
+		this.setTitle("Aplicação de Conversa (Servidor)");
 		
 		panelConfig = new JPanel();
 		contentPane.add(panelConfig, "panelConfig");
@@ -71,7 +78,7 @@ public class Server extends JFrame {
 		numeroPorta.setColumns(10);
 		
 		btnOk = new JButton("Ok");
-		btnOk.setBounds(102, 86, 61, 23);
+		btnOk.setBounds(90, 86, 73, 23);
 		panelConfig.add(btnOk);
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -81,7 +88,7 @@ public class Server extends JFrame {
 		});
 		
 		btnVoltar = new JButton("Voltar");
-		btnVoltar.setBounds(177, 86, 61, 23);
+		btnVoltar.setBounds(177, 86, 73, 23);
 		panelConfig.add(btnVoltar);
 		
 		panelStatus = new JPanel();
@@ -110,13 +117,18 @@ public class Server extends JFrame {
 		
 		btnEncerrarConexao = new JButton("Encerrar Conex\u00E3o");
 		btnEncerrarConexao.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { //TODO: Close Application and Server Connection
+			public void actionPerformed(ActionEvent e) { 
+				//TODO: Close connection. Maybe dispose() instead of exit() in case Connection can be reestablished
+				System.exit(0);
 			}
 		});
 		btnEncerrarConexao.setBounds(94, 79, 144, 30);
 		panelStatus.add(btnEncerrarConexao);
 		btnVoltar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Server.this.dispose();
+				Inicio inicio = new Inicio();
+				inicio.setVisible(true);
 			}
 		});
 	}
