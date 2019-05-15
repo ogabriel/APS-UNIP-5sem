@@ -41,8 +41,8 @@ public class Inicio extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel);
 		contentPanel.setLayout(null);
-		this.setLocationRelativeTo(null);
-		this.setTitle("Aplicação de Conversa");
+		setLocationRelativeTo(null);
+		setTitle("Aplicação de Conversa");
 		{
 			JButton btnServidor = new JButton("Servidor");
 			btnServidor.addActionListener(new ActionListener() {

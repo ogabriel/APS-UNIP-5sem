@@ -35,7 +35,6 @@ public class Client extends JFrame {
 				try {
 					// TODO: get the client username
 					Client frame = new Client();
-					frame.setTitle("Aplicação de Conversa (Cliente)");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -48,14 +47,14 @@ public class Client extends JFrame {
 	 * Create the frame.
 	 */
 	public Client() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 464, 446);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-		this.setLocationRelativeTo(null);
-		this.setTitle("Aplicação de Conversa (Cliente)");
+		setLocationRelativeTo(null);
+		setTitle("Aplicação de Conversa (Cliente)");
 		
 		JScrollPane messages = new JScrollPane();
 		messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);

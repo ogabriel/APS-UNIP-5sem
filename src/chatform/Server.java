@@ -40,7 +40,6 @@ public class Server extends JFrame {
 			public void run() {
 				try {
 					Server frame = new Server();
-					frame.setTitle("Aplicação de Conversa (Servidor)");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
