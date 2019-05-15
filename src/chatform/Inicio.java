@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.event.ActionEvent;
 
 public class Inicio extends JDialog {
@@ -24,7 +27,7 @@ public class Inicio extends JDialog {
 	public static void main(String[] args) {
 		try {
 			Inicio dialog = new Inicio();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -35,6 +38,7 @@ public class Inicio extends JDialog {
 	 * Create the dialog.
 	 */
 	public Inicio() {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(null);
 		contentPanel.setBounds(0, 0, 434, 228);
@@ -61,6 +65,14 @@ public class Inicio extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					Login login = new Login();
 					login.setVisible(true);
+					WindowListener exitListener = new WindowAdapter() {
+
+					    @Override
+					    public void windowClosed(WindowEvent e) {
+					        Inicio.this.dispose();
+					    }
+					};
+					login.addWindowListener(exitListener);
 				}
 			});
 			btnCliente.setBounds(242, 126, 182, 61);

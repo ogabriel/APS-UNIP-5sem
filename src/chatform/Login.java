@@ -71,7 +71,8 @@ public class Login extends JFrame {
 				    @Override
 				    public void windowClosing(WindowEvent e) {
 				        Inicio inicio = new Inicio();
-					client.dispose();
+				        inicio.setVisible(true);
+				        client.dispose();
 				    }
 				};
 				client.addWindowListener(exitListener);
