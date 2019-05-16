@@ -65,11 +65,20 @@ public class Inicio extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					Login login = new Login();
 					login.setVisible(true);
+					Inicio.this.setEnabled(false);
 					WindowListener exitListener = new WindowAdapter() {
 
 					    @Override
 					    public void windowClosed(WindowEvent e) {
-					        Inicio.this.dispose();
+					        if (login.next == true)
+					        {
+					        	Inicio.this.setEnabled(true);
+					        	Inicio.this.dispose();
+					        }
+					        else {
+					        	Inicio.this.setEnabled(true);
+					        	Inicio.this.setVisible(true);
+					        }
 					    }
 					};
 					login.addWindowListener(exitListener);

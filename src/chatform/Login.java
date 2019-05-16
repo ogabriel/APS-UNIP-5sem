@@ -24,7 +24,7 @@ public class Login extends JFrame {
 	private JTextField inputIP;
 	private JTextField inputPort;
 	private JTextField inputUser;
-
+	public boolean next;
 	/**
 	 * Launch the application.
 	 */
@@ -66,6 +66,7 @@ public class Login extends JFrame {
 				client.setAlwaysOnTop (true);
 				setFocusableWindowState(false);
 				client.setVisible(true);
+				next = true;
 				WindowListener exitListener = new WindowAdapter() {
 
 				    @Override
