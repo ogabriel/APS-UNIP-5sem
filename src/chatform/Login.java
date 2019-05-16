@@ -9,6 +9,9 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.event.ActionEvent;
 
 public class Login extends JFrame {
@@ -43,12 +46,14 @@ public class Login extends JFrame {
 	 */
 	public Login() {
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 374, 277);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		setLocationRelativeTo(null);
+		setTitle("Aplicação de Conversa (Cliente)");
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new ActionListener() {
@@ -57,9 +62,20 @@ public class Login extends JFrame {
 				// TODO: send the data or the connection
 				// Connection con = connect();
 				// frame.connection(con)
+				Login.this.dispose();
 				client.setAlwaysOnTop (true);
 				setFocusableWindowState(false);
 				client.setVisible(true);
+				WindowListener exitListener = new WindowAdapter() {
+
+				    @Override
+				    public void windowClosing(WindowEvent e) {
+				        Inicio inicio = new Inicio();
+				        inicio.setVisible(true);
+				        client.dispose();
+				    }
+				};
+				client.addWindowListener(exitListener);
 			}
 		});
 		
