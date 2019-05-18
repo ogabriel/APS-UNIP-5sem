@@ -1,8 +1,7 @@
 package chatform;
 
-import connection.Server;
-
 import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -13,30 +12,25 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.CardLayout;
-import java.net.ServerSocket;
-import java.net.Socket;
 
-public class SetupServer extends JFrame {
-	/**
-	 * Server variables
-	 */
-	private static ServerSocket server;
+public class Server extends JFrame {
 
 	/**
-	 *  Form variables
+	 * 
 	 */
-	private static final long serialVersionUID = 4998717362394143017L;
+	private static final long serialVersionUID = -4998717362394143017L;
 	private JPanel contentPane;
-	private JTextField inputPort;
+	private JTextField numeroPorta;
 	private JButton btnOk;
-	private JButton btnBack;
+	private JButton btnVoltar;
 	private JPanel panelConfig;
 	private JPanel panelStatus;
 	private JLabel lblIp;
-	private JLabel lblPort;
-	private JLabel lblValueIP;
-	private JLabel lblValuePort;
-	private JButton btnStopConnection;
+	private JLabel lblPorta;
+	private JLabel lblValorIp;
+	private JLabel lblValorPorta;
+	private JButton btnEncerrarConexao;
+	public boolean a;
 
 	/**
 	 * Launch the application.
@@ -45,7 +39,7 @@ public class SetupServer extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SetupServer frame = new SetupServer();
+					Server frame = new Server();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -57,7 +51,7 @@ public class SetupServer extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public SetupServer() {
+	public Server() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 366, 158);
 		contentPane = new JPanel();
@@ -76,11 +70,11 @@ public class SetupServer extends JFrame {
 		panelConfig.add(lblNumeroDaPorta);
 		lblNumeroDaPorta.setFont(new Font("Arial", Font.PLAIN, 15));
 		
-		inputPort = new JTextField();
-		inputPort.setBounds(135, 35, 86, 20);
-		panelConfig.add(inputPort);
-		inputPort.setText("12345");
-		inputPort.setColumns(10);
+		numeroPorta = new JTextField();
+		numeroPorta.setBounds(135, 35, 86, 20);
+		panelConfig.add(numeroPorta);
+		numeroPorta.setText("12345");
+		numeroPorta.setColumns(10);
 		
 		btnOk = new JButton("Ok");
 		btnOk.setBounds(90, 86, 73, 23);
@@ -89,13 +83,12 @@ public class SetupServer extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				CardLayout c = (CardLayout)(contentPane.getLayout());
 				c.show(contentPane, "panelStatus");
-				startServer();
 			}
 		});
 		
-		btnBack = new JButton("Voltar");
-		btnBack.setBounds(177, 86, 73, 23);
-		panelConfig.add(btnBack);
+		btnVoltar = new JButton("Voltar");
+		btnVoltar.setBounds(177, 86, 73, 23);
+		panelConfig.add(btnVoltar);
 		
 		panelStatus = new JPanel();
 		contentPane.add(panelStatus, "panelStatus");
@@ -106,53 +99,36 @@ public class SetupServer extends JFrame {
 		lblIp.setBounds(38, 11, 46, 14);
 		panelStatus.add(lblIp);
 		
-		lblPort = new JLabel("Porta:");
-		lblPort.setFont(new Font("Arial", Font.PLAIN, 15));
-		lblPort.setBounds(38, 36, 46, 14);
-		panelStatus.add(lblPort);
+		lblPorta = new JLabel("Porta:");
+		lblPorta.setFont(new Font("Arial", Font.PLAIN, 15));
+		lblPorta.setBounds(38, 36, 46, 14);
+		panelStatus.add(lblPorta);
 		
-		lblValueIP = new JLabel(); //TODO: JLabel(getIP())
-		lblValueIP.setFont(new Font("Tahoma", Font.BOLD, 13));
-		lblValueIP.setBounds(67, 11, 171, 14);
-		panelStatus.add(lblValueIP);
+		lblValorIp = new JLabel(); //TODO: JLabel(getIP())
+		lblValorIp.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblValorIp.setBounds(67, 11, 171, 14);
+		panelStatus.add(lblValorIp);
 		
-		lblValuePort = new JLabel(); //TODO: JLabel(getPort())
-		lblValuePort.setFont(new Font("Tahoma", Font.BOLD, 13));
-		lblValuePort.setBounds(80, 36, 154, 14);
-		panelStatus.add(lblValuePort);
+		lblValorPorta = new JLabel(); //TODO: JLabel(getPort())
+		lblValorPorta.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblValorPorta.setBounds(80, 36, 154, 14);
+		panelStatus.add(lblValorPorta);
 		
-		btnStopConnection = new JButton("Encerrar Conex\u00E3o");
-		btnStopConnection.addActionListener(new ActionListener() {
+		btnEncerrarConexao = new JButton("Encerrar Conex\u00E3o");
+		btnEncerrarConexao.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				//TODO: Close connection. Maybe dispose() instead of exit() in case Connection can be reestablished
 				System.exit(0);
 			}
 		});
-		btnStopConnection.setBounds(94, 79, 144, 30);
-		panelStatus.add(btnStopConnection);
-		btnBack.addActionListener(new ActionListener() {
+		btnEncerrarConexao.setBounds(94, 79, 144, 30);
+		panelStatus.add(btnEncerrarConexao);
+		btnVoltar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SetupServer.this.dispose();
-				Start start = new Start();
-				start.setVisible(true);
+				Server.this.dispose();
+				Inicio inicio = new Inicio();
+				inicio.setVisible(true);
 			}
 		});
-	}
-
-	private void startServer() {
-		try {
-            server = new ServerSocket(Integer.parseInt(inputPort.getText()));
-
-            while(true) {
-            	System.out.println("Esperando Novos Clientes");
-                Socket con;
-				con = server.accept();
-				System.out.println("Novo Cliente entrou no Chat");
-                Thread t = new Server(con);
-                t.start();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 	}
 }
