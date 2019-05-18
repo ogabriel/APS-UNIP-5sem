@@ -13,7 +13,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.ActionEvent;
 
-public class Inicio extends JDialog {
+public class Start extends JDialog {
 
 	/**
 	 * 
@@ -26,8 +26,7 @@ public class Inicio extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			Inicio dialog = new Inicio();
-			
+			Start dialog = new Start();
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -37,7 +36,7 @@ public class Inicio extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public Inicio() {
+	public Start() {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(null);
@@ -53,7 +52,7 @@ public class Inicio extends JDialog {
 				public void actionPerformed(ActionEvent arg0) {
 					SetupServer server = new SetupServer();
 					server.setVisible(true);
-					Inicio.this.dispose();
+					Start.this.dispose();
 				}
 			});
 			btnServidor.setBounds(10, 126, 182, 61);
@@ -69,7 +68,7 @@ public class Inicio extends JDialog {
 
 					    @Override
 					    public void windowClosed(WindowEvent e) {
-					        Inicio.this.dispose();
+					        Start.this.dispose();
 					    }
 					};
 					login.addWindowListener(exitListener);

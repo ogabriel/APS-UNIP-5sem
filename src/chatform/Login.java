@@ -70,8 +70,8 @@ public class Login extends JFrame {
 
 				    @Override
 				    public void windowClosing(WindowEvent e) {
-				        Inicio inicio = new Inicio();
-				        inicio.setVisible(true);
+				        lblValuePort start = new Start();
+				        start.setVisible(true);
 				        client.dispose();
 				    }
 				};
