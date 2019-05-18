@@ -79,7 +79,7 @@ public class SetupServer extends JFrame {
 		inputPort = new JTextField();
 		inputPort.setBounds(135, 35, 86, 20);
 		panelConfig.add(inputPort);
-		inputPort.setText("12345");
+		inputPort.setText("45454");
 		inputPort.setColumns(10);
 		
 		btnOk = new JButton("Ok");
@@ -143,13 +143,12 @@ public class SetupServer extends JFrame {
 		try {
             server = new ServerSocket(Integer.parseInt(inputPort.getText()));
 
-            while(true) {
-            	System.out.println("Esperando Novos Clientes");
-                Socket con;
-				con = server.accept();
-				System.out.println("Novo Cliente entrou no Chat");
-                Thread t = new Server(con);
-                t.start();
+            while (true) {
+                System.out.println("Waiting connection...");
+                Socket connection = server.accept();
+                System.out.println("User connected...");
+                Thread serverThread = new Server(connection);
+                serverThread.start();
             }
         } catch (Exception e) {
             e.printStackTrace();
