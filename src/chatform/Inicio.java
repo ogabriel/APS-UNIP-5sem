@@ -51,7 +51,7 @@ public class Inicio extends JDialog {
 			JButton btnServidor = new JButton("Servidor");
 			btnServidor.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					SetupServer server = new SetupServer();
+					Server server = new Server();
 					server.setVisible(true);
 					Inicio.this.dispose();
 				}
