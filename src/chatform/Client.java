@@ -1,7 +1,7 @@
 package chatform;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.event.*;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -9,142 +9,271 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.ScrollPaneConstants;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.ActionEvent;
+import javax.swing.text.DefaultCaret;
 
-public class Client extends JFrame {
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5391582161763137020L;
-	private JPanel contentPane;
-	private JTextField inputText;
+import java.net.ConnectException;
+import java.net.Socket;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					// TODO: get the client username
-					Client frame = new Client();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+public class Client extends JFrame implements Runnable {
 
-	/**
-	 * Create the frame.
-	 */
-	public Client() {
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 464, 446);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setLocationRelativeTo(null);
-		setTitle("AplicaÁ„o de Conversa (Cliente)");
-		
-		JScrollPane messages = new JScrollPane();
-		messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		contentPane.add(messages, BorderLayout.CENTER);
-		
-		JPanel interactive = new JPanel();
-		contentPane.add(interactive, BorderLayout.SOUTH);
-		interactive.setLayout(new BorderLayout(0, 0));
-		
-		inputText = new JTextField();
-		interactive.add(inputText, BorderLayout.CENTER);
-		inputText.setColumns(10);
-		
-		JPanel buttons = new JPanel();
-		interactive.add(buttons, BorderLayout.EAST);
-		buttons.setLayout(new BorderLayout(0, 0));
-		
-		JButton btnSend = new JButton("Enviar");
-		btnSend.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				sendMessage();
-			}
-		});
-		buttons.add(btnSend, BorderLayout.NORTH);
-		
-		JButton btnEnviarArquivo = new JButton("Enviar arquivo");
-		btnEnviarArquivo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				sendFile();
-			}
-		});
-		
-		inputText.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					sendMessage();
-				}
-			}
-		});
-		
-		
-		buttons.add(btnEnviarArquivo, BorderLayout.CENTER);
-		
-		JButton btnExit = new JButton("Desconectar");
-		buttons.add(btnExit, BorderLayout.SOUTH);
-	}
-	
-	private void sendMessage() {
-		// TODO: send the result to the method that sends the text
-		// LIKE: Send(getText());
-		getText();
-		inputText.setText("");
-	}
-	
-	private void sendFile() {
-		// TODO: send the result to the method that sends the file
-		// LIKE: Send(getFile());
-		getFile();
-	}
-	
-	private String getText() {
-		return inputText.getText();
-	}
-	
-	private String getFile() {
-		JFileChooser chooseFile = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Apenas arquivos de texto e imagens", "jpg", "txt", "png", "xml");
-		chooseFile.setCurrentDirectory(new java.io.File("."));
-		chooseFile.setAcceptAllFileFilterUsed(false);
-		chooseFile.setFileFilter(filter);
-		String file = "";
-		
-		if(chooseFile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			file = chooseFile.getSelectedFile().getAbsolutePath();
-		    inputText.setText(file); 
-		}
-		
-		return file;
-	}
+    /**
+     * Socket variables
+     */
+    private Socket socket;
+    private OutputStream outS;
+    private Writer outSWriter;
+    private BufferedWriter bufferWriter;
+
+    /**
+     * Client variables
+     */
+    private String user;
+    private String serverIP;
+    private int serverPort;
+
+    /**
+     * Form variables
+     */
+    private static final long serialVersionUID = 5391582161763137020L;
+    private JPanel contentPane;
+    private JTextField inputText;
+    private JScrollPane messages;
+    private JTextArea output;
+
+    /**
+     * Launch the application.
+     */
+    public void run() {
+        try {
+            this.setTitle(this.user);
+            this.establishConnection();
+            this.listenConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Create the frame.
+     */
+    public Client(String[] args) {
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+                                   @Override
+                                   public void windowClosing(WindowEvent e) {
+                                       if(socket == null)
+                                           dispose();
+                                       else if(!socket.isClosed()) {
+                                           try {
+                                               disconnect();
+                                           } catch (Exception ex) {
+                                               ex.printStackTrace();
+                                           }
+                                       }
+
+                                       Start start = new Start();
+                                       start.setVisible(true);
+                                       dispose();
+                                   }
+                               }
+        );
+
+        setBounds(100, 100, 600, 500);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(new BorderLayout(0, 0));
+        setLocationRelativeTo(null);
+        setTitle("AplicaÁ„o de Conversa (Cliente)");
+
+        output = new JTextArea();
+        output.setEditable(false);
+        output.setLineWrap(true);
+
+        messages = new JScrollPane(output);
+        messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        DefaultCaret caretOutput = (DefaultCaret) output.getCaret();
+        caretOutput.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        contentPane.add(messages, BorderLayout.CENTER);
+
+        JPanel interactive = new JPanel();
+        contentPane.add(interactive, BorderLayout.SOUTH);
+        interactive.setLayout(new BorderLayout(0, 0));
+
+        inputText = new JTextField();
+        interactive.add(inputText, BorderLayout.CENTER);
+        inputText.setColumns(10);
+
+        JPanel buttons = new JPanel();
+        interactive.add(buttons, BorderLayout.EAST);
+        buttons.setLayout(new BorderLayout(0, 0));
+
+        JButton btnSend = new JButton("Enviar");
+        btnSend.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                sendMessage(getText());
+            }
+        });
+        buttons.add(btnSend, BorderLayout.NORTH);
+
+        JButton btnEnviarArquivo = new JButton("Enviar arquivo");
+        btnEnviarArquivo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                sendFile();
+            }
+        });
+
+        inputText.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    sendMessage(getText());
+                }
+            }
+        });
+        buttons.add(btnEnviarArquivo, BorderLayout.CENTER);
+
+        JButton btnExit = new JButton("Desconectar");
+        btnExit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    disconnect();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        buttons.add(btnExit, BorderLayout.SOUTH);
+
+        setLocationRelativeTo(null);
+        setVisible(true);
+        setClientInfo(args[0], args[1], args[2]);
+    }
+
+    public void setClientInfo(String user, String serverIP, String serverPort) {
+        this.user = user;
+        this.serverIP = serverIP;
+        this.serverPort = Integer.parseInt(serverPort);
+    }
+
+    private void sendMessage(String msg) {
+        try {
+            if (msg.equals("Disconnect " + user)) {
+                bufferWriter.write(msg);
+            } else {
+                bufferWriter.write(concatMsg(msg));
+            }
+            bufferWriter.flush();
+            inputText.setText("");
+        } catch (Exception e) {
+            writeOutput("Desconectado");
+        }
+    }
+
+    private String concatMsg(String msg) {
+        return "[" + user + "]" + " -> " + msg + "\r\n";
+    }
+
+    private void sendFile() {
+        // TODO: send the result to the method that sends the file
+        // LIKE: Send(getFile());
+        writeOutput(concatMsg("VocÍ enviou o arquivo: " + getFile()));
+    }
+
+    private String getText() {
+        return inputText.getText();
+    }
+
+    private void writeOutput(String phrase) {
+        output.append(phrase + "\r\n");
+    }
+
+    private String getFile() {
+        JFileChooser chooseFile = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Apenas arquivos de texto e imagens", "jpg", "txt", "png", "xml");
+        chooseFile.setCurrentDirectory(new java.io.File("."));
+        chooseFile.setAcceptAllFileFilterUsed(false);
+        chooseFile.setFileFilter(filter);
+        String file = "";
+
+        if (chooseFile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            file = chooseFile.getSelectedFile().getAbsolutePath();
+        }
+        return file;
+    }
+
+    public void establishConnection() throws IOException {
+        try {
+            socket = new Socket(this.serverIP, this.serverPort);
+            outS = socket.getOutputStream();
+            outSWriter = new OutputStreamWriter(outS);
+            bufferWriter = new BufferedWriter(outSWriter);
+            bufferWriter.write(user + "\r\n");
+            bufferWriter.flush();
+        } catch (ConnectException e) {
+            System.out.println("Nao foi poss√≠vel criar a conexao, servidor indipon√≠vel na porta e ip indicados");
+        } catch (Exception e) {
+            e.printStackTrace();
+            disconnect();
+        }
+    }
+
+    public void listenConnection() throws IOException {
+        try {
+            InputStream inS = socket.getInputStream();
+            InputStreamReader inSReader = new InputStreamReader(inS);
+            BufferedReader bufferedReader = new BufferedReader(inSReader);
+            String msg = "";
+
+            while (!("Disconnect " + user).equalsIgnoreCase(msg))
+                if (bufferedReader.ready()) {
+                    msg = bufferedReader.readLine();
+                    if (msg.equals("Disconnect"))
+                        writeOutput("Desconectado do servidor...");
+                    else
+                        writeOutput(msg);
+                }
+        } catch (Exception e) {
+            System.out.println("Imposs√≠vel escutar servidor. O mesmo poss√≠velmente esta indispon√≠vel");
+        }
+    }
+
+    public void disconnect() throws IOException {
+        sendMessage("Disconnect " + this.user);
+        try {
+            outS.close();
+            outSWriter.close();
+            bufferWriter.close();
+            socket.close();
+        } catch (Exception e) {
+            System.out.println("Nao √© poss√≠vel fechar conexao");
+        }
+    }
 }
