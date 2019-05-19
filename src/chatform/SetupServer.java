@@ -146,7 +146,6 @@ public class SetupServer extends JFrame {
             while (true) {
                 System.out.println("Waiting connection...");
                 Socket connection = server.accept();
-                System.out.println("User connected...");
                 Thread serverThread = new Server(connection);
                 serverThread.start();
             }
