@@ -211,7 +211,6 @@ public class Client extends JFrame implements Runnable {
 
     public void establishConnection() throws IOException {
         socket = new Socket(this.serverIP, this.serverPort);
-//        socket = new Socket("127.0.0.1", 45454);
         outS = socket.getOutputStream();
         outSWriter = new OutputStreamWriter(outS);
         bufferWriter = new BufferedWriter(outSWriter);
@@ -233,5 +232,13 @@ public class Client extends JFrame implements Runnable {
                 else
                     writeOutput(msg);
             }
+    }
+
+    public void disconnect() throws IOException {
+        sendMessage("Disconnect");
+        outS.close();
+        outSWriter.close();
+        bufferWriter.close();
+        socket.close();
     }
 }
