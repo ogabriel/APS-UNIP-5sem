@@ -1,7 +1,5 @@
 package chatform;
 
-import main.Run;
-
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -62,18 +60,9 @@ public class Login extends JFrame {
                 setFocusableWindowState(false);
 
                 try {
-                    EventQueue.invokeLater(new Runnable() {
-                        Client.main(new String[]{getUser(), getIP(), getPort()});
-                    });
-
-                    Runnable
-//                    Client.main(new String[] {getUser(), getIP(), getPort()});
-                    Client frame = new Client();
-                    frame.setClientInfo("user", "127.0.0.1", "45454");
-//                    frame.setClientInfo(args[0], args[1], args[2]);
-                    frame.establishConnection();
-                    frame.listenConnection();
-                } catch (IOException e) {
+                    Thread thread = new Thread(new Client(new String[] {getUser(), getIP(), getPort()}));
+                    thread.start();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
