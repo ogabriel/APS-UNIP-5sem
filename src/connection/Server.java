@@ -1,9 +1,7 @@
 package connection;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.Buffer;
 import java.util.ArrayList;
 
 public class Server extends Thread {
@@ -42,31 +40,23 @@ public class Server extends Thread {
 
             while (!"Disconnect".equalsIgnoreCase(msg) && msg != null) {
                 msg = this.bufferReader.readLine();
+                broadCast(msg);
                 System.out.println(msg);
-                // close the thread
-                try {
-                    bufferWriter.flush();
-                } catch (IOException e) {
-                    int index = users.indexOf(current_user);
-                    clients.remove(index);
-                    users.remove(index);
-                    break;
-                }
-                this.broadCast(bufferWriter, msg);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void broadCast(BufferedWriter bInput, String msg) throws IOException {
-        BufferedWriter bufferWriterOut;
-
+    public void broadCast(String msg) {
         for (BufferedWriter bufferClient : clients) {
-            bufferWriterOut = bufferClient;
-            if (!(bufferWriterOut == bInput)) {
+            try {
                 bufferClient.write(msg + "\r\n");
+                System.out.println("user" + msg);
                 bufferClient.flush();
+            } catch (IOException e) {
+                clients.remove(bufferClient);
+                e.printStackTrace();
             }
         }
     }
