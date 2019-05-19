@@ -37,12 +37,17 @@ public class Server extends Thread {
             String current_user = this.bufferReader.readLine();
             users.add(current_user);
             String msg = "";
+            System.out.println(current_user + " Connected");
 
-            while (!"Disconnect".equalsIgnoreCase(msg) && msg != null) {
+            while (!("Disconnect " + current_user).equalsIgnoreCase(msg) && msg != null) {
                 msg = this.bufferReader.readLine();
                 broadCast(msg);
-                System.out.println(msg);
+                System.out.println(current_user + " [listener] " + msg);
             }
+
+            int index = users.indexOf(current_user);
+            clients.remove(index);
+            users.remove(index);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,10 +57,9 @@ public class Server extends Thread {
         for (BufferedWriter bufferClient : clients) {
             try {
                 bufferClient.write(msg + "\r\n");
-                System.out.println("user" + msg);
+                System.out.println("[Broadcast] " + msg);
                 bufferClient.flush();
-            } catch (IOException e) {
-                clients.remove(bufferClient);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
