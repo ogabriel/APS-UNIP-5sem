@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import java.net.ConnectException;
 import java.net.Socket;
 
 public class Client extends JFrame implements Runnable {
@@ -69,11 +70,13 @@ public class Client extends JFrame implements Runnable {
      * Create the frame.
      */
     public Client(String[] args) {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
                                    @Override
                                    public void windowClosing(WindowEvent e) {
-                                       if(!socket.isClosed()) {
+                                       if(socket == null)
+                                           dispose();
+                                       else if(!socket.isClosed()) {
                                            try {
                                                disconnect();
                                            } catch (Exception ex) {
@@ -191,7 +194,6 @@ public class Client extends JFrame implements Runnable {
             inputText.setText("");
         } catch (Exception e) {
             writeOutput("Desconectado");
-            e.printStackTrace();
         }
     }
 
@@ -228,35 +230,50 @@ public class Client extends JFrame implements Runnable {
     }
 
     public void establishConnection() throws IOException {
-        socket = new Socket(this.serverIP, this.serverPort);
-        outS = socket.getOutputStream();
-        outSWriter = new OutputStreamWriter(outS);
-        bufferWriter = new BufferedWriter(outSWriter);
-        bufferWriter.write(user + "\r\n");
-        bufferWriter.flush();
+        try {
+            socket = new Socket(this.serverIP, this.serverPort);
+            outS = socket.getOutputStream();
+            outSWriter = new OutputStreamWriter(outS);
+            bufferWriter = new BufferedWriter(outSWriter);
+            bufferWriter.write(user + "\r\n");
+            bufferWriter.flush();
+        } catch (ConnectException e) {
+            System.out.println("Nao foi possível criar a conexao, servidor indiponível na porta e ip indicados");
+        } catch (Exception e) {
+            e.printStackTrace();
+            disconnect();
+        }
     }
 
     public void listenConnection() throws IOException {
-        InputStream inS = socket.getInputStream();
-        InputStreamReader inSReader = new InputStreamReader(inS);
-        BufferedReader bufferedReader = new BufferedReader(inSReader);
-        String msg = "";
+        try {
+            InputStream inS = socket.getInputStream();
+            InputStreamReader inSReader = new InputStreamReader(inS);
+            BufferedReader bufferedReader = new BufferedReader(inSReader);
+            String msg = "";
 
-        while (!("Disconnect " + user).equalsIgnoreCase(msg))
-            if (bufferedReader.ready()) {
-                msg = bufferedReader.readLine();
-                if (msg.equals("Disconnect"))
-                    writeOutput("Desconectado do servidor...");
-                else
-                    writeOutput(msg);
-            }
+            while (!("Disconnect " + user).equalsIgnoreCase(msg))
+                if (bufferedReader.ready()) {
+                    msg = bufferedReader.readLine();
+                    if (msg.equals("Disconnect"))
+                        writeOutput("Desconectado do servidor...");
+                    else
+                        writeOutput(msg);
+                }
+        } catch (Exception e) {
+            System.out.println("Impossível escutar servidor. O mesmo possívelmente esta indisponível");
+        }
     }
 
     public void disconnect() throws IOException {
         sendMessage("Disconnect " + this.user);
-        outS.close();
-        outSWriter.close();
-        bufferWriter.close();
-        socket.close();
+        try {
+            outS.close();
+            outSWriter.close();
+            bufferWriter.close();
+            socket.close();
+        } catch (Exception e) {
+            System.out.println("Nao é possível fechar conexao");
+        }
     }
 }
