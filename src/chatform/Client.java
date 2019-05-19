@@ -57,6 +57,7 @@ public class Client extends JFrame implements Runnable {
      */
     public void run() {
         try {
+            this.setTitle(this.user);
             this.establishConnection();
             this.listenConnection();
         } catch (Exception e) {
@@ -72,12 +73,21 @@ public class Client extends JFrame implements Runnable {
         this.addWindowListener(new WindowAdapter() {
                                    @Override
                                    public void windowClosing(WindowEvent e) {
+                                       if(!socket.isClosed()) {
+                                           try {
+                                               disconnect();
+                                           } catch (Exception ex) {
+                                               ex.printStackTrace();
+                                           }
+                                       }
+
                                        Start start = new Start();
                                        start.setVisible(true);
                                        dispose();
                                    }
                                }
         );
+
         setBounds(100, 100, 600, 500);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -88,9 +98,14 @@ public class Client extends JFrame implements Runnable {
 
         output = new JTextArea();
         output.setEditable(false);
+        output.setLineWrap(true);
 
         messages = new JScrollPane(output);
-        messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        DefaultCaret caretOutput = (DefaultCaret) output.getCaret();
+        caretOutput.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
         contentPane.add(messages, BorderLayout.CENTER);
 
         JPanel interactive = new JPanel();
@@ -108,12 +123,7 @@ public class Client extends JFrame implements Runnable {
         JButton btnSend = new JButton("Enviar");
         btnSend.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try {
-                    sendMessage(getText());
-                } catch (IOException e1) {
-                    writeOutput("Disconnected");
-                    e1.printStackTrace();
-                }
+                sendMessage(getText());
             }
         });
         buttons.add(btnSend, BorderLayout.NORTH);
@@ -141,21 +151,24 @@ public class Client extends JFrame implements Runnable {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    try {
-                        sendMessage(getText());
-                    } catch (IOException e1) {
-                        writeOutput("CAGOU");
-                        e1.printStackTrace();
-                    }
+                    sendMessage(getText());
                 }
             }
         });
-
-
         buttons.add(btnEnviarArquivo, BorderLayout.CENTER);
 
         JButton btnExit = new JButton("Desconectar");
+        btnExit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    disconnect();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         buttons.add(btnExit, BorderLayout.SOUTH);
+
         setLocationRelativeTo(null);
         setVisible(true);
         setClientInfo(args[0], args[1], args[2]);
