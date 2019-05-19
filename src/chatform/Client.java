@@ -55,12 +55,21 @@ public class Client extends JFrame {
     /**
      * Launch the application.
      */
-    public static void main(String[] args) throws IOException {
+//    public static void main(String[] args) throws IOException {
+//        Client frame = new Client();
+//        frame.setClientInfo("user", "127.0.0.1", "45454");
+////        frame.setClientInfo(args[0], args[1], args[2]);
+//        frame.establishConnection();
+//        frame.listenConnection();
+//    }
+    public void run() throws IOException {
         Client frame = new Client();
+        frame.setClientInfo("user", "127.0.0.1", "45454");
         frame.setClientInfo(args[0], args[1], args[2]);
         frame.establishConnection();
         frame.listenConnection();
     }
+
 
     /**
      * Create the frame.
@@ -154,6 +163,7 @@ public class Client extends JFrame {
 
         JButton btnExit = new JButton("Desconectar");
         buttons.add(btnExit, BorderLayout.SOUTH);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -221,16 +231,13 @@ public class Client extends JFrame {
         BufferedReader bufferedReader = new BufferedReader(inSReader);
         String msg = "";
 
-        while (!"Disconnect".equalsIgnoreCase(msg)) {
+        while (!"Disconnect".equalsIgnoreCase(msg))
             if (bufferedReader.ready()) {
                 msg = bufferedReader.readLine();
-                output.append(msg + "\r\n");
                 if (msg.equals("Disconnect"))
                     writeOutput("Desconectado do servidor...");
                 else
                     writeOutput(msg);
             }
-            break;
-        }
     }
 }
