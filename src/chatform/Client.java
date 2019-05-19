@@ -180,14 +180,19 @@ public class Client extends JFrame implements Runnable {
         this.serverPort = Integer.parseInt(serverPort);
     }
 
-    private void sendMessage(String msg) throws IOException {
-        if (msg.equals("Disconnect")) {
-            bufferWriter.write(concatMsg("Desconectado"));
-        } else {
-            bufferWriter.write(concatMsg(msg));
+    private void sendMessage(String msg) {
+        try {
+            if (msg.equals("Disconnect " + user)) {
+                bufferWriter.write(msg);
+            } else {
+                bufferWriter.write(concatMsg(msg));
+            }
+            bufferWriter.flush();
+            inputText.setText("");
+        } catch (Exception e) {
+            writeOutput("Desconectado");
+            e.printStackTrace();
         }
-        bufferWriter.flush();
-        inputText.setText("");
     }
 
     private String concatMsg(String msg) {
@@ -237,7 +242,7 @@ public class Client extends JFrame implements Runnable {
         BufferedReader bufferedReader = new BufferedReader(inSReader);
         String msg = "";
 
-        while (!"Disconnect".equalsIgnoreCase(msg))
+        while (!("Disconnect " + user).equalsIgnoreCase(msg))
             if (bufferedReader.ready()) {
                 msg = bufferedReader.readLine();
                 if (msg.equals("Disconnect"))
@@ -248,7 +253,7 @@ public class Client extends JFrame implements Runnable {
     }
 
     public void disconnect() throws IOException {
-        sendMessage("Disconnect");
+        sendMessage("Disconnect " + this.user);
         outS.close();
         outSWriter.close();
         bufferWriter.close();
