@@ -1,7 +1,6 @@
 package chatform;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.event.*;
 
 import javax.swing.JFrame;
@@ -14,6 +13,7 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.text.DefaultCaret;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
