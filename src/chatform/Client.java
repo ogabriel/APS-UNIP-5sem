@@ -26,7 +26,7 @@ import java.io.Writer;
 
 import java.net.Socket;
 
-public class Client extends JFrame {
+public class Client extends JFrame implements Runnable {
 
     /**
      * Socket variables
@@ -55,26 +55,19 @@ public class Client extends JFrame {
     /**
      * Launch the application.
      */
-//    public static void main(String[] args) throws IOException {
-//        Client frame = new Client();
-//        frame.setClientInfo("user", "127.0.0.1", "45454");
-////        frame.setClientInfo(args[0], args[1], args[2]);
-//        frame.establishConnection();
-//        frame.listenConnection();
-//    }
-    public void run() throws IOException {
-        Client frame = new Client();
-        frame.setClientInfo("user", "127.0.0.1", "45454");
-        frame.setClientInfo(args[0], args[1], args[2]);
-        frame.establishConnection();
-        frame.listenConnection();
+    public void run() {
+        try {
+            this.establishConnection();
+            this.listenConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
 
     /**
      * Create the frame.
      */
-    public Client() {
+    public Client(String[] args) {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
                                    @Override
@@ -165,6 +158,7 @@ public class Client extends JFrame {
         buttons.add(btnExit, BorderLayout.SOUTH);
         setLocationRelativeTo(null);
         setVisible(true);
+        setClientInfo(args[0], args[1], args[2]);
     }
 
     public void setClientInfo(String user, String serverIP, String serverPort) {
