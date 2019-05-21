@@ -14,8 +14,11 @@ import javax.swing.SwingUtilities;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.CardLayout;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+
 public class SetupServer extends JFrame {
 	/**
 	 * Server variables
@@ -37,7 +40,8 @@ public class SetupServer extends JFrame {
 	private JLabel lblValueIP;
 	private JLabel lblValuePort;
 	private JButton btnStopConnection;
-
+	private InetAddress inetAddress;
+	private String hostaddress;
 	/**
 	 * Launch the application.
 	 */
@@ -65,13 +69,13 @@ public class SetupServer extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
 		this.setLocationRelativeTo(null);
-		this.setTitle("Aplica��o de Conversa (Servidor)");
+		this.setTitle("Aplicação de Conversa (Servidor)");
 		
 		panelConfig = new JPanel();
 		contentPane.add(panelConfig, "panelConfig");
 		panelConfig.setLayout(null);
 		
-		JLabel lblNumeroDaPorta = new JLabel("N\u00FAmero da porta:");
+		JLabel lblNumeroDaPorta = new JLabel("Número da porta:");
 		lblNumeroDaPorta.setBounds(10, 35, 113, 18);
 		panelConfig.add(lblNumeroDaPorta);
 		lblNumeroDaPorta.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -86,11 +90,7 @@ public class SetupServer extends JFrame {
 		btnOk.setBounds(90, 86, 73, 23);
 		panelConfig.add(btnOk);
 		btnOk.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CardLayout c = (CardLayout)(contentPane.getLayout());
-				c.show(contentPane, "panelStatus");
-				lblValuePort.setText(inputPort.getText());
-        		lblValueIP.setText("Precisa ter um IP aqui");
+			public void actionPerformed(ActionEvent e) {				      		
 				startServer();
 			}
 		});
@@ -123,7 +123,7 @@ public class SetupServer extends JFrame {
 		lblValuePort.setBounds(80, 36, 154, 14);
 		panelStatus.add(lblValuePort);
 		
-		btnStopConnection = new JButton("Encerrar Conex\u00E3o");
+		btnStopConnection = new JButton("Encerrar Conexão");
 		btnStopConnection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				//TODO: Close connection. Maybe dispose() instead of exit() in case Connection can be reestablished
@@ -143,14 +143,20 @@ public class SetupServer extends JFrame {
 
 	private void startServer() {
 		try {
-			new Thread(new Runnable( ) {
+			server = new ServerSocket(Integer.parseInt(inputPort.getText()));
+			new Thread(new Runnable() {
 				@Override
-				public void run() {
+				public void run() {		
+					CardLayout c = (CardLayout)(contentPane.getLayout());
+					c.show(contentPane, "panelStatus");
 					try {
-						Thread.sleep(100);
-					} catch(InterruptedException e) {
-						e.printStackTrace();
-					}
+						inetAddress = InetAddress.getLocalHost();
+						hostaddress = inetAddress.getHostAddress();
+						lblValueIP.setText(hostaddress);
+					} catch (UnknownHostException e1) {
+						e1.printStackTrace();
+					}					
+					lblValuePort.setText(inputPort.getText());
 					while (true) {
 		                System.out.println("Waiting connection...");
 		                try {
@@ -161,11 +167,8 @@ public class SetupServer extends JFrame {
 		                	e.printStackTrace();
 		                }		                
 		            }
-				}
-				
+				}				
 			}).start();
-			
-            server = new ServerSocket(Integer.parseInt(inputPort.getText()));            
         } catch (Exception e) {
             e.printStackTrace();
         }
