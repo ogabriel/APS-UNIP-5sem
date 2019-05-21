@@ -10,12 +10,12 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.CardLayout;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 public class SetupServer extends JFrame {
 	/**
 	 * Server variables
@@ -65,7 +65,7 @@ public class SetupServer extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
 		this.setLocationRelativeTo(null);
-		this.setTitle("Aplicação de Conversa (Servidor)");
+		this.setTitle("Aplicaï¿½ï¿½o de Conversa (Servidor)");
 		
 		panelConfig = new JPanel();
 		contentPane.add(panelConfig, "panelConfig");
@@ -89,6 +89,8 @@ public class SetupServer extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				CardLayout c = (CardLayout)(contentPane.getLayout());
 				c.show(contentPane, "panelStatus");
+				lblValuePort.setText(inputPort.getText());
+        		lblValueIP.setText("Precisa ter um IP aqui");
 				startServer();
 			}
 		});
@@ -141,14 +143,29 @@ public class SetupServer extends JFrame {
 
 	private void startServer() {
 		try {
-            server = new ServerSocket(Integer.parseInt(inputPort.getText()));
-
-            while (true) {
-                System.out.println("Waiting connection...");
-                Socket connection = server.accept();
-                Thread serverThread = new Server(connection);
-                serverThread.start();
-            }
+			new Thread(new Runnable( ) {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(100);
+					} catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+					while (true) {
+		                System.out.println("Waiting connection...");
+		                try {
+		                Socket connection = server.accept();
+		                Thread serverThread = new Server(connection);
+		                serverThread.start();
+		                } catch (Exception e) {
+		                	e.printStackTrace();
+		                }		                
+		            }
+				}
+				
+			}).start();
+			
+            server = new ServerSocket(Integer.parseInt(inputPort.getText()));            
         } catch (Exception e) {
             e.printStackTrace();
         }
