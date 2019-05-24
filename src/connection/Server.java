@@ -43,7 +43,8 @@ public class Server extends Thread {
 
             while (!("Text&Disconnect " + currentUser).equalsIgnoreCase(msg) && msg != null) {
                 broadCast(msg);
-                System.out.println(current_user + " [listener] " + msg);
+                System.out.println(currentUser + " [Server(run)] " + msg);
+                msg = this.bufferReader.readLine();
             }
 
             int index = users.indexOf(current_user);
