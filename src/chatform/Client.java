@@ -15,17 +15,13 @@ import javax.swing.JFileChooser;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.text.DefaultCaret;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 
 import java.net.ConnectException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Client extends JFrame implements Runnable {
 
@@ -97,7 +93,7 @@ public class Client extends JFrame implements Runnable {
         setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout(0, 0));
         setLocationRelativeTo(null);
-        setTitle("AplicaÁ„o de Conversa (Cliente)");
+        setTitle("AplicaÔøΩÔøΩo de Conversa (Cliente)");
 
         output = new JTextArea();
         output.setEditable(false);
@@ -126,7 +122,11 @@ public class Client extends JFrame implements Runnable {
         JButton btnSend = new JButton("Enviar");
         btnSend.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                sendMessage(getText());
+                String text = inputText.getText();
+                if(!text.equals("")) {
+                    sendMessage(concatMsg(text));
+                    inputText.setText("");
+                }
             }
         });
         buttons.add(btnSend, BorderLayout.NORTH);
@@ -134,7 +134,17 @@ public class Client extends JFrame implements Runnable {
         JButton btnEnviarArquivo = new JButton("Enviar arquivo");
         btnEnviarArquivo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                sendFile();
+                try {
+                    String file = getFile();
+                    if(!file.equals("")) {
+                        sendMessage("Text&" + user + " Enviou texto no arquivo \"recebido.txt\"");
+                        sendMessage("File&" + parseFile(file));
+                    } else {
+                        writeOutput("Nenhum arquivo selecionado");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -154,7 +164,11 @@ public class Client extends JFrame implements Runnable {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    sendMessage(getText());
+                    String text = inputText.getText();
+                    if(!text.equals("")) {
+                        sendMessage(concatMsg(text));
+                        inputText.setText("");
+                    }
                 }
             }
         });
@@ -185,30 +199,15 @@ public class Client extends JFrame implements Runnable {
 
     private void sendMessage(String msg) {
         try {
-            if (msg.equals("Disconnect " + user)) {
-                bufferWriter.write(msg);
-            } else {
-                bufferWriter.write(concatMsg(msg));
-            }
+            bufferWriter.write(msg);
             bufferWriter.flush();
-            inputText.setText("");
         } catch (Exception e) {
             writeOutput("Desconectado");
         }
     }
 
     private String concatMsg(String msg) {
-        return "[" + user + "]" + " -> " + msg + "\r\n";
-    }
-
-    private void sendFile() {
-        // TODO: send the result to the method that sends the file
-        // LIKE: Send(getFile());
-        writeOutput(concatMsg("VocÍ enviou o arquivo: " + getFile()));
-    }
-
-    private String getText() {
-        return inputText.getText();
+        return "Text&" + "[" + user + "]" + " -> " + msg + "\r\n";
     }
 
     private void writeOutput(String phrase) {
@@ -217,7 +216,7 @@ public class Client extends JFrame implements Runnable {
 
     private String getFile() {
         JFileChooser chooseFile = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Apenas arquivos de texto e imagens", "jpg", "txt", "png", "xml");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Apenas arquivos de texto", "txt", "java", "xml", "json", "html", "css", "docx");
         chooseFile.setCurrentDirectory(new java.io.File("."));
         chooseFile.setAcceptAllFileFilterUsed(false);
         chooseFile.setFileFilter(filter);
@@ -226,7 +225,24 @@ public class Client extends JFrame implements Runnable {
         if (chooseFile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             file = chooseFile.getSelectedFile().getAbsolutePath();
         }
+
         return file;
+    }
+
+    private String parseFile(String fileName) throws IOException {
+        writeOutput("VocÔøΩ enviou o arquivo: " + fileName);
+
+        String dataToBeSent = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+
+        return dataToBeSent;
+    }
+
+    private void receiveFile(String receivedString) throws IOException {
+        File file = new File("recebido.txt");
+        FileWriter fWriter = new FileWriter(file);
+        fWriter.write(receivedString);
+
+        fWriter.close();
     }
 
     public void establishConnection() throws IOException {
@@ -251,22 +267,35 @@ public class Client extends JFrame implements Runnable {
             InputStreamReader inSReader = new InputStreamReader(inS);
             BufferedReader bufferedReader = new BufferedReader(inSReader);
             String msg = "";
+            String command;
+            String textMsg;
 
-            while (!("Disconnect " + user).equalsIgnoreCase(msg))
+            do {
                 if (bufferedReader.ready()) {
                     msg = bufferedReader.readLine();
-                    if (msg.equals("Disconnect"))
-                        writeOutput("Desconectado do servidor...");
-                    else
-                        writeOutput(msg);
+                    command = msg.split("&", 2)[0];
+                    textMsg = msg.split("&", 2)[1];
+
+                    System.out.println(command);
+                    System.out.println(textMsg);
+
+                    if(command.equals("Text")) {
+                        writeOutput(textMsg);
+                    } else if(command.equals("File")) {
+                        receiveFile(textMsg);
+                    } else {
+                        writeOutput("Algo esta errado na mensagem recebida do servidor");
+                    }
                 }
+            } while (!("Disconnect " + user).equalsIgnoreCase(msg));
+
         } catch (Exception e) {
             System.out.println("Imposs√≠vel escutar servidor. O mesmo poss√≠velmente esta indispon√≠vel");
         }
     }
 
     public void disconnect() throws IOException {
-        sendMessage("Disconnect " + this.user);
+        sendMessage(concatMsg("Disconnect " + this.user));
         try {
             outS.close();
             outSWriter.close();
