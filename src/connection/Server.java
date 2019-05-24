@@ -18,9 +18,7 @@ public class Server extends Thread {
 
         try {
             // Reader
-            inS = connection.getInputStream();
-            inSReader = new InputStreamReader(inS);
-            bufferReader = new BufferedReader(inSReader);
+            bufferReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -30,9 +28,7 @@ public class Server extends Thread {
     public void run() {
         try {
 
-            OutputStream ouS = this.connection.getOutputStream();
-            Writer osWriter = new OutputStreamWriter(ouS);
-            BufferedWriter bufferWriter = new BufferedWriter(osWriter);
+            BufferedWriter bufferWriter = new BufferedWriter(new OutputStreamWriter(this.connection.getOutputStream()));
 
             clients.add(bufferWriter);
             currentUser = this.bufferReader.readLine();

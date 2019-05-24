@@ -24,8 +24,6 @@ public class Client extends JFrame implements Runnable {
      * Socket variables
      */
     private Socket socket;
-    private OutputStream outS;
-    private Writer outSWriter;
     private BufferedWriter bufferWriter;
 
     /**
@@ -39,7 +37,6 @@ public class Client extends JFrame implements Runnable {
      * Form variables
      */
     private static final long serialVersionUID = 5391582161763137020L;
-    private JPanel contentPane;
     private JTextField inputText;
     private JScrollPane messages;
     private JTextArea output;
@@ -83,7 +80,7 @@ public class Client extends JFrame implements Runnable {
         );
 
         setBounds(100, 100, 600, 500);
-        contentPane = new JPanel();
+        JPanel contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout(0, 0));
@@ -194,9 +191,7 @@ public class Client extends JFrame implements Runnable {
     public void establishConnection() throws IOException {
         try {
             socket = new Socket(this.serverIP, this.serverPort);
-            outS = socket.getOutputStream();
-            outSWriter = new OutputStreamWriter(outS);
-            bufferWriter = new BufferedWriter(outSWriter);
+            bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             bufferWriter.write(user + "\r\n");
             bufferWriter.flush();
         } catch (ConnectException e) {
@@ -209,9 +204,8 @@ public class Client extends JFrame implements Runnable {
 
     public void listenConnection() throws IOException {
         try {
-            InputStream inS = socket.getInputStream();
-            InputStreamReader inSReader = new InputStreamReader(inS);
-            BufferedReader bufferedReader = new BufferedReader(inSReader);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
             String msg = "";
             String command;
             String textMsg;
@@ -238,8 +232,6 @@ public class Client extends JFrame implements Runnable {
     public void disconnect() {
         sendMessage("Text&" + "Disconnect " + this.user);
         try {
-            outS.close();
-            outSWriter.close();
             bufferWriter.close();
             socket.close();
         } catch (Exception e) {
