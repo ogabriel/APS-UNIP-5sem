@@ -213,22 +213,30 @@ public class Client extends JFrame implements Runnable {
             InputStreamReader inSReader = new InputStreamReader(inS);
             BufferedReader bufferedReader = new BufferedReader(inSReader);
             String msg = "";
+            String command;
+            String textMsg;
 
-            while (!("Disconnect " + user).equalsIgnoreCase(msg))
+            do {
                 if (bufferedReader.ready()) {
                     msg = bufferedReader.readLine();
-                    if (msg.equals("Disconnect"))
-                        writeOutput("Desconectado do servidor...");
-                    else
-                        writeOutput(msg);
+                    command = msg.split("&", 2)[0];
+                    textMsg = msg.split("&", 2)[1];
+
+                    if(command.equals("Text")) {
+                        writeOutput(textMsg);
+                    } else {
+                        writeOutput("Algo esta errado na mensagem recebida do servidor");
+                    }
                 }
+            } while (!("Disconnect " + user).equalsIgnoreCase(msg));
+
         } catch (Exception e) {
             System.out.println("Impossível escutar servidor. O mesmo possívelmente esta indisponível");
         }
     }
 
-    public void disconnect() throws IOException {
-        sendMessage("Disconnect " + this.user);
+    public void disconnect() {
+        sendMessage("Text&" + "Disconnect " + this.user);
         try {
             outS.close();
             outSWriter.close();
