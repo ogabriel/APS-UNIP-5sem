@@ -47,11 +47,12 @@ public class Server extends Thread {
                 msg = this.bufferReader.readLine();
             }
 
-            int index = users.indexOf(current_user);
-            clients.remove(index);
-            users.remove(index);
+            removeUser(currentUser);
+
+            broadCast("Text&Usuário " + currentUser + " Desconectado");
         } catch (Exception e) {
             e.printStackTrace();
+            removeUser(currentUser);
         }
     }
 
