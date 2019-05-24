@@ -117,17 +117,14 @@ public class Client extends JFrame implements Runnable {
         JButton btnSend = new JButton("Enviar");
         btnSend.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                sendMessage(getText());
+                String text = inputText.getText();
+                if(!text.equals("")) {
+                    sendMessage(concatMsg(text));
+                    inputText.setText("");
+                }
             }
         });
         buttons.add(btnSend, BorderLayout.NORTH);
-
-        JButton btnEnviarArquivo = new JButton("Enviar arquivo");
-        btnEnviarArquivo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                sendFile();
-            }
-        });
 
         inputText.addKeyListener(new KeyListener() {
             @Override
@@ -189,35 +186,11 @@ public class Client extends JFrame implements Runnable {
     }
 
     private String concatMsg(String msg) {
-        return "[" + user + "]" + " -> " + msg + "\r\n";
-    }
-
-    private void sendFile() {
-        // TODO: send the result to the method that sends the file
-        // LIKE: Send(getFile());
-        writeOutput(concatMsg("Você enviou o arquivo: " + getFile()));
-    }
-
-    private String getText() {
-        return inputText.getText();
+        return "Text&" + "[" + user + "]" + " ~> " + msg + "\r\n";
     }
 
     private void writeOutput(String phrase) {
         output.append(phrase + "\r\n");
-    }
-
-    private String getFile() {
-        JFileChooser chooseFile = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Apenas arquivos de texto e imagens", "jpg", "txt", "png", "xml");
-        chooseFile.setCurrentDirectory(new java.io.File("."));
-        chooseFile.setAcceptAllFileFilterUsed(false);
-        chooseFile.setFileFilter(filter);
-        String file = "";
-
-        if (chooseFile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            file = chooseFile.getSelectedFile().getAbsolutePath();
-        }
-        return file;
     }
 
     public void establishConnection() throws IOException {
