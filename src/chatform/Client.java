@@ -142,11 +142,14 @@ public class Client extends JFrame implements Runnable {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    sendMessage(getText());
+                    String text = inputText.getText();
+                    if(!text.equals("")) {
+                        sendMessage(concatMsg(text));
+                        inputText.setText("");
+                    }
                 }
             }
         });
-        buttons.add(btnEnviarArquivo, BorderLayout.CENTER);
 
         JButton btnExit = new JButton("Desconectar");
         btnExit.addActionListener(new ActionListener() {
@@ -173,13 +176,8 @@ public class Client extends JFrame implements Runnable {
 
     private void sendMessage(String msg) {
         try {
-            if (msg.equals("Disconnect " + user)) {
-                bufferWriter.write(msg);
-            } else {
-                bufferWriter.write(concatMsg(msg));
-            }
+            bufferWriter.write(msg);
             bufferWriter.flush();
-            inputText.setText("");
         } catch (Exception e) {
             writeOutput("Desconectado");
         }
