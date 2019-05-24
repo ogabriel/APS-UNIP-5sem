@@ -65,4 +65,10 @@ public class Server extends Thread {
             }
         }
     }
+
+    public void removeUser(String user) {
+        int index = users.indexOf(user);
+        clients.remove(index);
+        users.remove(index);
+    }
 }
