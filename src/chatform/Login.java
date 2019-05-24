@@ -59,12 +59,7 @@ public class Login extends JFrame {
                 Login.this.dispose();
                 setFocusableWindowState(false);
 
-                try {
-                    Thread thread = new Thread(new Client(new String[] {getUser(), getIP(), getPort()}));
-                    thread.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                connect();
             }
         });
 
@@ -110,8 +105,12 @@ public class Login extends JFrame {
     }
 
     private void connect() {
-        // TODO: create the connection with the data to send
-        // Create(getIP(), getPort(), getUser())
+        try {
+            Thread thread = new Thread(new Client(new String[] {getUser(), getIP(), getPort()}));
+            thread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String getIP() {
