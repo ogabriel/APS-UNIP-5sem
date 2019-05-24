@@ -11,6 +11,7 @@ public class Server extends Thread {
     private InputStream inS;
     private InputStreamReader inSReader;
     private BufferedReader bufferReader;
+    public String currentUser = "";
 
     public Server(Socket connection) throws IOException {
         this.connection = connection;
@@ -34,13 +35,13 @@ public class Server extends Thread {
             BufferedWriter bufferWriter = new BufferedWriter(osWriter);
 
             clients.add(bufferWriter);
-            String current_user = this.bufferReader.readLine();
-            users.add(current_user);
-            String msg = "";
-            System.out.println(current_user + " Connected");
+            currentUser = this.bufferReader.readLine();
+            users.add(currentUser);
 
-            while (!("Disconnect " + current_user).equalsIgnoreCase(msg) && msg != null) {
-                msg = this.bufferReader.readLine();
+            String msg = "Text&" + currentUser + " Conectado";
+            String line = "";
+
+            while (!("Text&Disconnect " + currentUser).equalsIgnoreCase(msg) && msg != null) {
                 broadCast(msg);
                 System.out.println(current_user + " [listener] " + msg);
             }
