@@ -11,15 +11,14 @@ public class Server extends Thread {
     private InputStream inS;
     private InputStreamReader inSReader;
     private BufferedReader bufferReader;
+    public String currentUser = "";
 
     public Server(Socket connection) throws IOException {
         this.connection = connection;
 
         try {
             // Reader
-            inS = connection.getInputStream();
-            inSReader = new InputStreamReader(inS);
-            bufferReader = new BufferedReader(inSReader);
+            bufferReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -29,27 +28,27 @@ public class Server extends Thread {
     public void run() {
         try {
 
-            OutputStream ouS = this.connection.getOutputStream();
-            Writer osWriter = new OutputStreamWriter(ouS);
-            BufferedWriter bufferWriter = new BufferedWriter(osWriter);
+            BufferedWriter bufferWriter = new BufferedWriter(new OutputStreamWriter(this.connection.getOutputStream()));
 
             clients.add(bufferWriter);
-            String current_user = this.bufferReader.readLine();
-            users.add(current_user);
-            String msg = "";
-            System.out.println(current_user + " Connected");
+            currentUser = this.bufferReader.readLine();
+            users.add(currentUser);
 
-            while (!("Disconnect " + current_user).equalsIgnoreCase(msg) && msg != null) {
-                msg = this.bufferReader.readLine();
+            String msg = "Text&" + currentUser + " Conectado";
+            String line = "";
+
+            while (!("Text&Disconnect " + currentUser).equalsIgnoreCase(msg) && msg != null) {
                 broadCast(msg);
-                System.out.println(current_user + " [listener] " + msg);
+                System.out.println(currentUser + " [Server(run)] " + msg);
+                msg = this.bufferReader.readLine();
             }
 
-            int index = users.indexOf(current_user);
-            clients.remove(index);
-            users.remove(index);
+            removeUser(currentUser);
+
+            broadCast("Text&Usuário " + currentUser + " Desconectado");
         } catch (Exception e) {
             e.printStackTrace();
+            removeUser(currentUser);
         }
     }
 
@@ -63,5 +62,11 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void removeUser(String user) {
+        int index = users.indexOf(user);
+        clients.remove(index);
+        users.remove(index);
     }
 }
