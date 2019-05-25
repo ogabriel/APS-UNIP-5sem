@@ -195,7 +195,7 @@ public class Client extends JFrame implements Runnable {
             bufferWriter.write(user + "\r\n");
             bufferWriter.flush();
         } catch (ConnectException e) {
-            System.out.println("Nao foi possÃ­vel criar a conexao, servidor indiponÃ­vel na porta e ip indicados");
+            System.out.println("Nao foi possível criar a conexão, servidor indisponível na porta e IP indicados.");
         } catch (Exception e) {
             e.printStackTrace();
             disconnect();
@@ -219,13 +219,13 @@ public class Client extends JFrame implements Runnable {
                     if(command.equals("Text")) {
                         writeOutput(textMsg);
                     } else {
-                        writeOutput("Algo esta errado na mensagem recebida do servidor");
+                        writeOutput("Algo está errado na mensagem recebida do servidor");
                     }
                 }
             } while (!("Disconnect " + user).equalsIgnoreCase(msg));
 
         } catch (Exception e) {
-            System.out.println("ImpossÃ­vel escutar servidor. O mesmo possÃ­velmente esta indisponÃ­vel");
+            System.out.println("Impossível escutar servidor. O mesmo possívelmente está indisponível.");
         }
     }
 
@@ -236,7 +236,7 @@ public class Client extends JFrame implements Runnable {
             bufferWriter.close();
             socket.close();
         } catch (Exception e) {
-            System.out.println("Nao Ã© possÃ­vel fechar conexao");
+            System.out.println("Nao é possível fechar conexão.");
         }
     }
 }

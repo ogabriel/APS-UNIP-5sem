@@ -10,7 +10,6 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.SwingUtilities;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.CardLayout;
@@ -69,13 +68,13 @@ public class SetupServer extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
 		this.setLocationRelativeTo(null);
-		this.setTitle("AplicaÃ§Ã£o de Conversa (Servidor)");
+		this.setTitle("Aplicação de Conversa (Servidor)");
 		
 		panelConfig = new JPanel();
 		contentPane.add(panelConfig, "panelConfig");
 		panelConfig.setLayout(null);
 		
-		JLabel lblNumeroDaPorta = new JLabel("NÃºmero da porta:");
+		JLabel lblNumeroDaPorta = new JLabel("Número da porta:");
 		lblNumeroDaPorta.setBounds(10, 35, 113, 18);
 		panelConfig.add(lblNumeroDaPorta);
 		lblNumeroDaPorta.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -123,7 +122,7 @@ public class SetupServer extends JFrame {
 		lblValuePort.setBounds(80, 36, 154, 14);
 		panelStatus.add(lblValuePort);
 		
-		btnStopConnection = new JButton("Encerrar ConexÃ£o");
+		btnStopConnection = new JButton("Encerrar Conexão");
 		btnStopConnection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				//TODO: Close connection. Maybe dispose() instead of exit() in case Connection can be reestablished

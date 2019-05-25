@@ -10,7 +10,6 @@ import java.awt.Font;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 public class Login extends JFrame {
 
@@ -91,7 +90,7 @@ public class Login extends JFrame {
         inputPort.setBounds(138, 76, 222, 30);
         contentPane.add(inputPort);
 
-        JLabel lblUsurio = new JLabel("Nome de usu\u00E1rio:");
+        JLabel lblUsurio = new JLabel("Nome de usuário:");
         lblUsurio.setFont(new Font("Arial", Font.PLAIN, 15));
         lblUsurio.setBounds(5, 134, 151, 39);
         contentPane.add(lblUsurio);
