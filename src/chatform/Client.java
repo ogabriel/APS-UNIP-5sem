@@ -230,6 +230,7 @@ public class Client extends JFrame implements Runnable {
     }
 
     public void disconnect() {
+        writeOutput("Desconectado");
         sendMessage("Text&" + "Disconnect " + this.user);
         try {
             bufferWriter.close();
