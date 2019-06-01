@@ -38,7 +38,6 @@ public class Client extends JFrame implements Runnable {
      */
     private static final long serialVersionUID = 5391582161763137020L;
     private JTextField inputText;
-    private JScrollPane messages;
     private JTextArea output;
 
     /**
@@ -91,7 +90,7 @@ public class Client extends JFrame implements Runnable {
         output.setEditable(false);
         output.setLineWrap(true);
 
-        messages = new JScrollPane(output);
+        JScrollPane messages = new JScrollPane(output);
         messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         DefaultCaret caretOutput = (DefaultCaret) output.getCaret();
@@ -165,7 +164,7 @@ public class Client extends JFrame implements Runnable {
         setClientInfo(args[0], args[1], args[2]);
     }
 
-    public void setClientInfo(String user, String serverIP, String serverPort) {
+    private void setClientInfo(String user, String serverIP, String serverPort) {
         this.user = user;
         this.serverIP = serverIP;
         this.serverPort = Integer.parseInt(serverPort);
@@ -188,7 +187,7 @@ public class Client extends JFrame implements Runnable {
         output.append(phrase + "\r\n");
     }
 
-    public void establishConnection() throws IOException {
+    private void establishConnection() {
         try {
             socket = new Socket(this.serverIP, this.serverPort);
             bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -202,7 +201,7 @@ public class Client extends JFrame implements Runnable {
         }
     }
 
-    public void listenConnection() throws IOException {
+    private void listenConnection() {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -229,7 +228,7 @@ public class Client extends JFrame implements Runnable {
         }
     }
 
-    public void disconnect() {
+    private void disconnect() {
         writeOutput("Desconectado");
         sendMessage("Text&" + "Disconnect " + this.user);
         try {

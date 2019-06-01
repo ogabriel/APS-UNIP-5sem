@@ -5,15 +5,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class Server extends Thread {
-    private static ArrayList<BufferedWriter> clients = new ArrayList<>();
-    private static ArrayList<String> users = new ArrayList<>();
+    private static ArrayList<BufferedWriter> clients = new ArrayList<BufferedWriter>();
+    private static ArrayList<String> users = new ArrayList<String>();
     private Socket connection;
-    private InputStream inS;
-    private InputStreamReader inSReader;
     private BufferedReader bufferReader;
-    public String currentUser = "";
+    private String currentUser = "";
 
-    public Server(Socket connection) throws IOException {
+    public Server(Socket connection) {
         this.connection = connection;
 
         try {
@@ -35,7 +33,6 @@ public class Server extends Thread {
             users.add(currentUser);
 
             String msg = "Text&" + currentUser + " Conectado";
-            String line = "";
 
             while (!("Text&Disconnect " + currentUser).equalsIgnoreCase(msg) && msg != null) {
                 broadCast(msg);
@@ -52,7 +49,7 @@ public class Server extends Thread {
         }
     }
 
-    public void broadCast(String msg) {
+    private void broadCast(String msg) {
         for (BufferedWriter bufferClient : clients) {
             try {
                 bufferClient.write(msg + "\r\n");
@@ -64,7 +61,7 @@ public class Server extends Thread {
         }
     }
 
-    public void removeUser(String user) {
+    private void removeUser(String user) {
         int index = users.indexOf(user);
         clients.remove(index);
         users.remove(index);
