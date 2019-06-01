@@ -42,7 +42,7 @@ public class Server extends Thread {
 
             removeUser(currentUser);
 
-            broadCast("Text&Usu√°rio " + currentUser + " Desconectado");
+            broadCast("Text&Usu·rio " + currentUser + " Desconectado");
         } catch (Exception e) {
             e.printStackTrace();
             removeUser(currentUser);
